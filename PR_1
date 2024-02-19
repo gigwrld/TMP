@@ -1,0 +1,17 @@
+@startuml
+actor admin as a
+actor "Не зарегистрированный пользователь" as g
+actor "Зарегистрированный пользователь" as m
+
+usecase "Регистрирование пользователя" as UC1
+usecase "Аннулироване пользователя" as UC2
+usecase "Отправлять сообщения" as UC3
+usecase "Получать сообщения" as UC4
+
+a -- UC1
+a -- UC2
+g -- UC1
+m -- UC2
+m -> UC3
+m -> UC4
+@enduml
