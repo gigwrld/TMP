@@ -1,0 +1,24 @@
+@startuml
+node UserNode as "Пользователь" {
+node UserBrowser as "Браузер"
+}
+
+node WebServerNode as "Веб_Сервер" {
+node HTTPServerNode as "HTTP-Сервер"
+}
+
+node BDServerNode as "Сервер_БД" {
+database BDUsers as "БД_Пользователей"
+database BDAccount as "БД_Аккаунтов"
+database BDDialog as "БД_Диалогов"
+}
+
+node AdminNode as "Админ" {
+node AdminPanel as "Панель админа"
+}
+
+UserNode -- WebServerNode : https
+WebServerNode -- BDServerNode
+AdminNode -- BDServerNode
+
+@enduml
