@@ -1,0 +1,110 @@
+from abc import ABC, abstractmethod
+from enum import Enum
+
+class ClientMood(Enum):
+    """Настроение покупателя"""
+    GOOD = 1 #поздароваля и попросил вежливо
+    NORMAL = 2 #хотя бы поздаровался
+    BAD = 2 #ведет себя невежливо
+    BETTER_STAY_AWAY = 3 #ругается
+
+class Strategy(ABC):
+    """Интерфейс стратегии"""
+
+    @abstractmethod
+    def check_mood_client(self, mood: ClientMood) -> bool:
+        ...
+
+    @abstractmethod
+    def order_processing(self, money: int) -> str:
+        ...
+
+
+class GoodStrategy(Strategy):
+
+    def check_mood_client(self, mood: ClientMood) -> bool:
+        if (mood is ClientMood.GOOD or
+                mood is ClientMood.NORMAL):
+            return True
+        return False
+
+    def order_processing(self, money: int) -> str:
+        return "Самый лучшый напиток, который возможен!"
+
+
+class BadStrategy(Strategy):
+
+    def check_mood_client(self, mood: ClientMood) -> bool:
+        if (mood is ClientMood.BETTER_STAY_AWAY or
+                mood is ClientMood.BAD):
+            return True
+        return False
+
+    def order_processing(self, money: int) -> str:
+        return "И стакан воды сойдет!"
+
+
+class NormalStrategy(Strategy):
+
+    def check_mood_client(self, mood: ClientMood) -> bool:
+        return True
+
+    def order_processing(self, money: int) -> str:
+        if money < 50:
+            return "Вежливо отказаться от заказа клиента"
+        elif money < 100:
+            return "Приготовить espresso"
+        elif money < 150:
+            return "Приготовить капучино"
+        elif money < 200:
+            return "Приготовить отменный кофе"
+        else:
+            return "Самый лучшый напиток, который возможен!"
+
+
+class Barista:
+    def __init__(self, strategy: Strategy,
+                 client_mood: ClientMood):
+        self._strategy = strategy
+        self._client_mood = client_mood
+        print(f"Изначальное настроение покупателя: {client_mood.name}")
+
+    def get_client_mood(self) -> ClientMood:
+        return self._client_mood
+
+    def set_client_mood(self, client_mood: ClientMood) -> None:
+        print(f"Текущее настроение покупателя: {client_mood.name}")
+        self._client_mood = client_mood
+
+    def set_strategy(self, strategy: Strategy) -> None:
+        self._strategy = strategy
+
+    def take_order(self, money: int) -> None:
+        print(f"Клиент отдает за заказ {money} рублей")
+        if self._strategy.check_mood_client(self._client_mood):
+            print(self._strategy.order_processing(money))
+        else:
+            print("Сделать вид, что не заметил клиента!")
+
+
+if __name__ == "__main__":
+    print('Приходят в кофейню покупатели и просят "что-нибудь вкусненькое" и кладут сумму на стол')
+    print("-"*20)
+    print("Бариста выбрал нормальную стратегию")
+    barista = Barista(NormalStrategy(),
+                      ClientMood.BETTER_STAY_AWAY)
+    barista.take_order(0)
+    barista.take_order(50)
+    barista.take_order(500)
+    print("-" * 20)
+    print("У бариста поменялось настроение и он выбирает плохую стратегию")
+    barista.set_strategy(BadStrategy())
+    barista.take_order(40)
+    barista.take_order(200)
+    print("-" * 20)
+    print("Бариста повеселел и выбиает хорошую стратегию")
+    barista.set_strategy(GoodStrategy())
+    barista.take_order(100)
+    print("-" * 20)
+    barista.set_client_mood(ClientMood.GOOD)
+    barista.take_order(0)
