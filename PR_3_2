@@ -1,0 +1,88 @@
+from abc import ABC, abstractmethod
+from typing import List
+
+
+class Pizza:
+    """Класс приготовляемой поваром пиццы"""
+
+    def __init__(self):
+        self.__state: List[str] = ['base'] #основа пиццы
+
+    def add_ingredient(self, ingredient: str) -> None:
+        print(f"В пиццу добавлен ингредиент: {ingredient}")
+        self.__state.append(ingredient)
+
+    def __str__(self):
+        return f"Ингридиенты пиццы: {self.__state}"
+
+
+class PizzaMaker(ABC):
+    """Базовый класс шаблонного метода"""
+
+    def make_pizza(self, pizza: Pizza) -> None:
+        self.prepare_sauce(pizza) #подготовить соус
+        self.prepare_topping(pizza) #топпинг на пиццу
+        self.cook(pizza) #приготовление пиццы
+
+    @abstractmethod
+    def prepare_sauce(self, pizza: Pizza) -> None:
+        ...
+
+    @abstractmethod
+    def prepare_topping(self, pizza: Pizza) -> None:
+        ...
+
+    @abstractmethod
+    def cook(self, pizza: Pizza) -> None:
+        ...
+
+
+class MargaritaMaker(PizzaMaker):
+    """Класс приготовления пиццы Маргарита"""
+    def prepare_sauce(self, pizza: Pizza) -> None:
+        pizza.add_ingredient('Tomato sauce')
+
+    def prepare_topping(self, pizza: Pizza) -> None:
+        pizza.add_ingredient('Tomato')
+        pizza.add_ingredient('Mozzarella')
+        pizza.add_ingredient('Mozzarella')
+
+    def cook(self, pizza: Pizza) -> None:
+        print("Пицца 'Маргарита' будет готова через 20 минут")
+
+
+class SalamiMaker(PizzaMaker):
+    """Класс приготовления пиццы Салями"""
+    def prepare_sauce(self, pizza: Pizza) -> None:
+        pizza.add_ingredient('Pesto sauce')
+
+    def prepare_topping(self, pizza: Pizza) -> None:
+        pizza.add_ingredient('Salami')
+        pizza.add_ingredient('Salami')
+        pizza.add_ingredient('Mozzarella')
+
+    def cook(self, pizza: Pizza) -> None:
+        print("Пицца 'Салями' будет готова через 30 минут")
+
+
+class Chief:
+    """Класс шеф-повара"""
+    def __init__(self, template_pizza: PizzaMaker):
+        self.__cook = template_pizza
+
+    def set_cook_template(self, template_pizza: PizzaMaker):
+        self.__cook = template_pizza
+
+    def make_pizza(self) -> Pizza:
+        pizza = Pizza()
+        self.__cook.make_pizza(pizza)
+        return pizza
+
+
+if __name__ == "__main__":
+    chief = Chief(MargaritaMaker())
+    print("*" * 5 + 'Готовим пиццу "Маргарита"' + 5 *"*")
+    print(chief.make_pizza())
+    print("*" * 5 + 'Готовим пиццу "Салями"' + 5 * "*")
+    chief.set_cook_template(SalamiMaker())
+    print(chief.make_pizza())
