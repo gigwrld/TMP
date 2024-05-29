@@ -1,0 +1,79 @@
+from abc import ABC, abstractmethod
+
+class IProduct(ABC):
+    @abstractmethod
+    def cost(self) -> float:
+        pass
+
+    @abstractmethod
+    def name(self) -> str:
+        pass
+
+class Product(IProduct):
+    def __init__(self, name: str, cost: float):
+        self.__cost = cost
+        self.__name = name
+
+    def cost(self) -> float:
+        return self.__cost
+
+    def name(self) -> str:
+        return self.__name
+
+"""Класс компонуемых продуктов"""
+
+class CompoundProduct(IProduct):
+    def __init__(self, name: str):
+        self.__name = name
+        self.products = []
+
+    def cost(self):
+        cost = 0
+        for it in self.products:
+            cost += it.cost()
+        return cost
+
+    def name(self) -> str:
+        return self.__name
+
+    def add_product(self, product: IProduct):
+        self.products.append(product)
+
+    def remove_product(self, product: IProduct):
+        self.products.remove(product)
+
+    def clear(self):
+        self.products = []
+
+
+class Pizza(CompoundProduct):
+    def __init__(self, name: str):
+        super(Pizza, self).__init__(name)
+
+    def cost(self):
+        cost = 0
+        for it in self.products:
+            cost_it = it.cost()
+            print(f"Стоимость '{it.name()}' = {cost_it} ")
+            cost += cost_it
+        print(f"Стоимость пиццы '{self.name()}' = {cost} ")
+        return cost
+
+
+if __name__ == "__main__":
+    dough = CompoundProduct("тесто")
+    dough.add_product(Product("мука", 30))
+    dough.add_product(Product("яйцо", 65))
+    dough.add_product(Product("соль", 12))
+    dough.add_product(Product("сахар", 15))
+    sauce = Product("Барбекю", 120)
+    topping = CompoundProduct("топпинг")
+    topping.add_product(Product("Дор блю", 150))
+    topping.add_product(Product("Пармезан", 132))
+    topping.add_product(Product("Моцарелла", 124))
+    topping.add_product(Product("Маасдам", 98))
+    pizza = Pizza("4 сыра")
+    pizza.add_product(dough)
+    pizza.add_product(sauce)
+    pizza.add_product(topping)
+    print(pizza.cost())
