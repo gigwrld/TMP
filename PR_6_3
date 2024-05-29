@@ -1,0 +1,19 @@
+class Service:
+    def send(self, message):
+        pass
+
+class Pizza:
+    def send(self, message):
+        print("Пицца будет готова", message)
+
+class Manager:
+    def __init__(self, service):
+        self.service = service
+
+    def send(self, message):
+        self.service.send(message)
+
+notification = Pizza()
+
+manager = Manager(notification)
+notification.send("через 20 минут")
